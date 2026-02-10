@@ -1,14 +1,14 @@
-import express, { Request, Response, NextFunction } from "express"
+import express, { Request, Response, NextFunction } from "express";
 import { AppError } from "./utils/error";
 import router from "./routes";
-const app = express()
+const app = express();
 
-app.use(express.json())
+app.use(express.json());
 
-app.use("/", router)
+app.use("/", router);
 
 app.use((err: AppError, _: Request, res: Response, __: NextFunction) => {
-  res.status(400).json({
+  res.status(err.status || 500).json({
     success: false,
     msg: err.message,
     status: err.status || 123,
@@ -17,4 +17,4 @@ app.use((err: AppError, _: Request, res: Response, __: NextFunction) => {
   return;
 });
 
-app.listen(3000)
+app.listen(3000);

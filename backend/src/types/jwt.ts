@@ -1,4 +1,4 @@
 export type UpdatedJWTPayload = {
-  username: string,
-  userId: string
-}
+  username: string;
+  userId: string;
+};

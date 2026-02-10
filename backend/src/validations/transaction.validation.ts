@@ -8,19 +8,31 @@ export const createTransactionSchema = z.object({
     .string()
     .min(10, { error: "Description must be at least 10 characters" })
     .optional(),
-  date: z.date({ error: "Date must be a valid Date" }),
-  categoryId: z.string().min(1, { error: "categoryId is required" }),
+  date: z
+    .date({ error: "Date must be a valid Date" })
+    .optional()
+    .refine((date) => date && date < new Date(), {
+      error: "You can only add transaction for past dates",
+    }),
+  categoryId: z.string().optional(),
 });
 
 export const updateTransactionSchema = z.object({
   amt: z.number().min(0, { error: "Amount must be 0 or greater" }).optional(),
-  type: z.enum(TransactionType, { error: "Transaction type is invalid" }).optional(),
+  type: z
+    .enum(TransactionType, { error: "Transaction type is invalid" })
+    .optional(),
   description: z
     .string()
     .min(10, { error: "Description must be at least 10 characters" })
     .optional(),
-  date: z.date({ error: "Date must be a valid Date" }).optional(),
-  categoryId: z.string().min(1, { error: "categoryId is required" }).optional(),
+  date: z
+    .date({ error: "Date must be a valid Date" })
+    .optional()
+    .refine((date) => date && date < new Date(), {
+      error: "You can only add transaction for past dates",
+    }),
+  categoryId: z.string().optional(),
 });
 
 export const getTransactionByDateRangeSchema = z

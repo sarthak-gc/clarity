@@ -1,37 +1,38 @@
-import prisma from "../config/prisma.config"
+import prisma from "../config/prisma.config";
 export const CategoryRepo = {
   getAllCategories: (userId: string) => {
     return prisma.category.findMany({
       where: {
-        userId
-      }
-    })
+        userId,
+      },
+    });
   },
   editCategory: (name: string) => {
     return prisma.category.create({
       data: {
         name,
-      }
-    })
+      },
+    });
   },
-  addCategory: (name: string) => {
+  addCategory: (name: string, userId: string) => {
     return prisma.category.create({
       data: {
         name,
-      }
-    })
+        userId,
+      },
+    });
   },
   removeCategory: (id: string) => {
     return prisma.category.delete({
-      where: { id }
-    })
+      where: { id },
+    });
   },
 
   getCategoryById: (id: string) => {
     return prisma.category.findUnique({
       where: {
-        id
-      }
-    })
+        id,
+      },
+    });
   },
-}
+};

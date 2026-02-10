@@ -1,74 +1,142 @@
-import prisma from "../config/prisma.config"
-import { TransactionType } from "../generated/prisma/enums"
+import prisma from "../config/prisma.config";
+import { TransactionType } from "../generated/prisma/enums";
 export const TransactionRepo = {
-  createTransaction: (userId: string, amt: number, type: TransactionType, date: Date = new Date(), categoryId?: string, description?: string) => {
+  createTransaction: (
+    userId: string,
+    amt: number,
+    type: TransactionType,
+    date: Date = new Date(),
+    categoryId?: string,
+    description?: string,
+  ) => {
     return prisma.transaction.create({
       data: {
         userId,
         amt,
         type,
-        categoryId,
+        categoryId: categoryId || null,
         description,
-        date
-      }
-    })
+        date,
+      },
+      include: {
+        category: {
+          select: {
+            name: true,
+            id: true,
+          },
+        },
+      },
+    });
   },
-  getTransaction: (id: string) => {
+  getTransaction: (id: string, userId: string) => {
     return prisma.transaction.findUnique({
       where: {
         id,
-      }
-    })
+        userId,
+      },
+      include: {
+        category: {
+          select: {
+            name: true,
+            id: true,
+          },
+        },
+      },
+    });
   },
-  getAllTransactions: () => {
-    return prisma.transaction.findMany({})
+  getAllTransactions: (userId: string, page: number, take: number = 10) => {
+    return prisma.transaction.findMany({
+      where: { userId },
+      include: {
+        category: {
+          select: {
+            name: true,
+            id: true,
+          },
+        },
+      },
+      take,
+      skip: page * take,
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
   },
-  getAllExpenses: (userId: string) => {
+  getAllExpenses: (userId: string, page: number, take: number = 10) => {
     return prisma.transaction.findMany({
       where: {
         type: "EXPENSES",
-        userId
-      }
-    })
+        userId,
+      },
+      take,
+      skip: page * take,
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
   },
-  getAllIncomes: (userId: string) => {
+  getAllIncomes: (userId: string, page: number, take: number = 10) => {
     return prisma.transaction.findMany({
       where: {
         type: "INCOME",
-        userId
-      }
-    })
+        userId,
+      },
+      take,
+      skip: page * take,
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
   },
-  editTransaction: (id: string, data: any) => {
+  editTransaction: (id: string, userId: string, data: any) => {
     return prisma.transaction.update({
       where: {
         id,
+        userId,
       },
-      data
-    })
+      data,
+    });
   },
-  deleteTransaction: (id: string) => {
+  deleteTransaction: (id: string, userId: string) => {
     return prisma.transaction.delete({
       where: {
-        id
-      }
-    })
+        id,
+        userId,
+      },
+    });
   },
-  filterTransactionByDate: (startDate: Date, endDate: Date) => {
+  filterTransactionByDate: (
+    userId: string,
+    startDate: Date,
+    endDate: Date,
+    page: number,
+    take: number = 10,
+  ) => {
     return prisma.transaction.findMany({
       where: {
+        userId,
         date: {
           gte: startDate,
-          lte: endDate
-        }
-      }
-    })
+          lte: endDate,
+        },
+      },
+      take,
+      skip: page * take,
+    });
   },
-  filterTransactionByCategory: (categoryId: string) => {
+  filterTransactionByCategory: (
+    userId: string,
+    categoryId: string,
+    page: number,
+    take: number = 10,
+  ) => {
     return prisma.transaction.findMany({
       where: {
-        categoryId
-      }
-    })
-  }
-}
+        categoryId,
+        userId,
+      },
+      take,
+      skip: page * take,
+    });
+  },
+};
