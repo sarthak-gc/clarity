@@ -1,0 +1,384 @@
+diff --git a/backend/.env.example b/backend/.env.example
+new file mode 100644
+index 0000000..dd4d223
+--- /dev/null
++++ b/backend/.env.example
+@@ -0,0 +1,2 @@
++DATABASE_URL="postgresql://username:password@host:port/db"
++FRONTEND_URL="http://localhost:5173"
+\ No newline at end of file
+diff --git a/backend/.gitignore b/backend/.gitignore
+index f4cbca3..53fd71d 100644
+--- a/backend/.gitignore
++++ b/backend/.gitignore
+@@ -5,4 +5,4 @@ node_modules
+ /src/generated/prisma
+ 
+ /dist
+-/migrations
++/prisma/migrations
+diff --git a/backend/package.json b/backend/package.json
+index 7f3057f..26812b2 100644
+--- a/backend/package.json
++++ b/backend/package.json
+@@ -4,7 +4,8 @@
+   "description": "",
+   "main": "index.js",
+   "scripts": {
+-    "test": "echo \"Error: no test specified\" && exit 1"
++    "build": "pnpm i && pnpm prisma generate && npx tsc -b",
++    "start": "node dist/index.js"
+   },
+   "keywords": [],
+   "author": "",
+@@ -14,9 +15,11 @@
+     "@prisma/adapter-pg": "^7.3.0",
+     "@prisma/client": "^7.3.0",
+     "@types/bcrypt": "^6.0.0",
++    "@types/cors": "^2.8.19",
+     "@types/express": "^5.0.6",
+     "@types/jsonwebtoken": "^9.0.10",
+     "bcrypt": "^6.0.0",
++    "cors": "^2.8.6",
+     "dotenv": "^17.2.4",
+     "express": "^5.2.1",
+     "jsonwebtoken": "^9.0.3",
+@@ -26,6 +29,7 @@
+   "devDependencies": {
+     "@types/node": "^25.2.2",
+     "@types/pg": "^8.16.0",
+-    "prisma": "^7.3.0"
++    "prisma": "^7.3.0",
++    "typescript": "^5.9.3"
+   }
+ }
+diff --git a/backend/pnpm-lock.yaml b/backend/pnpm-lock.yaml
+index 2a51879..304a910 100644
+--- a/backend/pnpm-lock.yaml
++++ b/backend/pnpm-lock.yaml
+@@ -13,10 +13,13 @@ importers:
+         version: 7.3.0
+       '@prisma/client':
+         specifier: ^7.3.0
+-        version: 7.3.0(prisma@7.3.0(@types/react@19.2.13)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))
++        version: 7.3.0(prisma@7.3.0(@types/react@19.2.13)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(typescript@5.9.3)
+       '@types/bcrypt':
+         specifier: ^6.0.0
+         version: 6.0.0
++      '@types/cors':
++        specifier: ^2.8.19
++        version: 2.8.19
+       '@types/express':
+         specifier: ^5.0.6
+         version: 5.0.6
+@@ -26,6 +29,9 @@ importers:
+       bcrypt:
+         specifier: ^6.0.0
+         version: 6.0.0
++      cors:
++        specifier: ^2.8.6
++        version: 2.8.6
+       dotenv:
+         specifier: ^17.2.4
+         version: 17.2.4
+@@ -50,7 +56,10 @@ importers:
+         version: 8.16.0
+       prisma:
+         specifier: ^7.3.0
+-        version: 7.3.0(@types/react@19.2.13)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
++        version: 7.3.0(@types/react@19.2.13)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(typescript@5.9.3)
++      typescript:
++        specifier: ^5.9.3
++        version: 5.9.3
+ 
+ packages:
+ 
+@@ -160,6 +169,9 @@ packages:
+   '@types/connect@3.4.38':
+     resolution: {integrity: sha512-K6uROf1LD88uDQqJCktA4yzL1YYAK6NgfsI0v/mTgyPKWsX1CnJ0XPSDhViejru1GcRkLWb8RlzFYJRqGUbaug==}
+ 
++  '@types/cors@2.8.19':
++    resolution: {integrity: sha512-mFNylyeyqN93lfe/9CSxOGREz8cpzAhH+E93xJ4xWQf62V8sQ/24reV2nyzUWM6H6Xji+GGHpkbLe7pVoUEskg==}
++
+   '@types/express-serve-static-core@5.1.1':
+     resolution: {integrity: sha512-v4zIMr/cX7/d2BpAEX3KNKL/JrT1s43s96lLvvdTmza1oEvDudCqK9aF/djc/SWgy8Yh0h30TZx5VpzqFCxk5A==}
+ 
+@@ -271,6 +283,10 @@ packages:
+     resolution: {integrity: sha512-yki5XnKuf750l50uGTllt6kKILY4nQ1eNIQatoXEByZ5dWgnKqbnqmTrBE5B4N7lrMJKQ2ytWMiTO2o0v6Ew/w==}
+     engines: {node: '>= 0.6'}
+ 
++  cors@2.8.6:
++    resolution: {integrity: sha512-tJtZBBHA6vjIAaF6EnIaq6laBBP9aq/Y3ouVJjEfoHbRBcHBAHYcMh/w8LDrk2PvIMMq8gmopa5D4V8RmbrxGw==}
++    engines: {node: '>= 0.10'}
++
+   cross-spawn@7.0.6:
+     resolution: {integrity: sha512-uV2QOWP2nWzsy2aMp8aRibhi9dlzF5Hgh5SHaB9OiTGEyDTiJJyx0uy51QXdyWbtAHNua4XJzUKca3OzKUd3vA==}
+     engines: {node: '>= 8'}
+@@ -553,6 +569,10 @@ packages:
+     engines: {node: '>=18'}
+     hasBin: true
+ 
++  object-assign@4.1.1:
++    resolution: {integrity: sha512-rJgTQnkUnH1sFw8yT6VSU3zD3sWmu6sZhIseY8VX+GRu3P6F7Fu+JNDoXfklElbLJSnc3FUQHVe4cU5hj+BcUg==}
++    engines: {node: '>=0.10.0'}
++
+   object-inspect@1.13.4:
+     resolution: {integrity: sha512-W67iLl4J2EXEGTbfeHCffrjDfitvLANg0UlX3wFUUSTx92KXRFegMHUVgSqE+wvhAbi4WqjGg9czysTV2Epbew==}
+     engines: {node: '>= 0.4'}
+@@ -796,6 +816,11 @@ packages:
+     resolution: {integrity: sha512-OZs6gsjF4vMp32qrCbiVSkrFmXtG/AZhY3t0iAMrMBiAZyV9oALtXO8hsrHbMXF9x6L3grlFuwW2oAz7cav+Gw==}
+     engines: {node: '>= 0.6'}
+ 
++  typescript@5.9.3:
++    resolution: {integrity: sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw==}
++    engines: {node: '>=14.17'}
++    hasBin: true
++
+   undici-types@7.16.0:
+     resolution: {integrity: sha512-Zz+aZWSj8LE6zoxD+xrjh4VfkIG8Ya6LvYkZqtUQGJPZjYl53ypCaUwWqo7eI0x66KBGeRo+mlBEkMSeSZ38Nw==}
+ 
+@@ -879,11 +904,12 @@ snapshots:
+ 
+   '@prisma/client-runtime-utils@7.3.0': {}
+ 
+-  '@prisma/client@7.3.0(prisma@7.3.0(@types/react@19.2.13)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))':
++  '@prisma/client@7.3.0(prisma@7.3.0(@types/react@19.2.13)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(typescript@5.9.3)':
+     dependencies:
+       '@prisma/client-runtime-utils': 7.3.0
+     optionalDependencies:
+-      prisma: 7.3.0(@types/react@19.2.13)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
++      prisma: 7.3.0(@types/react@19.2.13)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(typescript@5.9.3)
++      typescript: 5.9.3
+ 
+   '@prisma/config@7.3.0':
+     dependencies:
+@@ -898,7 +924,7 @@ snapshots:
+ 
+   '@prisma/debug@7.3.0': {}
+ 
+-  '@prisma/dev@0.20.0':
++  '@prisma/dev@0.20.0(typescript@5.9.3)':
+     dependencies:
+       '@electric-sql/pglite': 0.3.15
+       '@electric-sql/pglite-socket': 0.0.20(@electric-sql/pglite@0.3.15)
+@@ -915,7 +941,7 @@ snapshots:
+       proper-lockfile: 4.1.2
+       remeda: 2.33.4
+       std-env: 3.10.0
+-      valibot: 1.2.0
++      valibot: 1.2.0(typescript@5.9.3)
+       zeptomatch: 2.1.0
+     transitivePeerDependencies:
+       - typescript
+@@ -970,6 +996,10 @@ snapshots:
+     dependencies:
+       '@types/node': 25.2.2
+ 
++  '@types/cors@2.8.19':
++    dependencies:
++      '@types/node': 25.2.2
++
+   '@types/express-serve-static-core@5.1.1':
+     dependencies:
+       '@types/node': 25.2.2
+@@ -1105,6 +1135,11 @@ snapshots:
+ 
+   cookie@0.7.2: {}
+ 
++  cors@2.8.6:
++    dependencies:
++      object-assign: 4.1.1
++      vary: 1.1.2
++
+   cross-spawn@7.0.6:
+     dependencies:
+       path-key: 3.1.1
+@@ -1390,6 +1425,8 @@ snapshots:
+       pathe: 2.0.3
+       tinyexec: 1.0.2
+ 
++  object-assign@4.1.1: {}
++
+   object-inspect@1.13.4: {}
+ 
+   ohash@2.0.11: {}
+@@ -1467,14 +1504,16 @@ snapshots:
+ 
+   postgres@3.4.7: {}
+ 
+-  prisma@7.3.0(@types/react@19.2.13)(react-dom@19.2.4(react@19.2.4))(react@19.2.4):
++  prisma@7.3.0(@types/react@19.2.13)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(typescript@5.9.3):
+     dependencies:
+       '@prisma/config': 7.3.0
+-      '@prisma/dev': 0.20.0
++      '@prisma/dev': 0.20.0(typescript@5.9.3)
+       '@prisma/engines': 7.3.0
+       '@prisma/studio-core': 0.13.1(@types/react@19.2.13)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+       mysql2: 3.15.3
+       postgres: 3.4.7
++    optionalDependencies:
++      typescript: 5.9.3
+     transitivePeerDependencies:
+       - '@types/react'
+       - magicast
+@@ -1630,11 +1669,15 @@ snapshots:
+       media-typer: 1.1.0
+       mime-types: 3.0.2
+ 
++  typescript@5.9.3: {}
++
+   undici-types@7.16.0: {}
+ 
+   unpipe@1.0.0: {}
+ 
+-  valibot@1.2.0: {}
++  valibot@1.2.0(typescript@5.9.3):
++    optionalDependencies:
++      typescript: 5.9.3
+ 
+   vary@1.1.2: {}
+ 
+diff --git a/backend/prisma/migrations/20260210051108_init/migration.sql b/backend/prisma/migrations/20260210051108_init/migration.sql
+deleted file mode 100644
+index 9138d1f..0000000
+--- a/backend/prisma/migrations/20260210051108_init/migration.sql
++++ /dev/null
+@@ -1,63 +0,0 @@
+--- CreateEnum
+-CREATE TYPE "TransactionType" AS ENUM ('INCOME', 'EXPENSES');
+-
+--- CreateTable
+-CREATE TABLE "User" (
+-    "id" TEXT NOT NULL,
+-    "username" TEXT NOT NULL,
+-    "password" TEXT NOT NULL,
+-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+-
+-    CONSTRAINT "User_pkey" PRIMARY KEY ("id")
+-);
+-
+--- CreateTable
+-CREATE TABLE "Transaction" (
+-    "id" TEXT NOT NULL,
+-    "userId" TEXT NOT NULL,
+-    "amt" DOUBLE PRECISION NOT NULL,
+-    "type" "TransactionType" NOT NULL,
+-    "categoryId" TEXT,
+-    "date" TIMESTAMP(3) NOT NULL,
+-    "description" TEXT,
+-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+-    "updatedAt" TIMESTAMP(3) NOT NULL,
+-
+-    CONSTRAINT "Transaction_pkey" PRIMARY KEY ("id")
+-);
+-
+--- CreateTable
+-CREATE TABLE "Category" (
+-    "id" TEXT NOT NULL,
+-    "name" TEXT NOT NULL,
+-    "transactionId" TEXT,
+-    "userId" TEXT,
+-
+-    CONSTRAINT "Category_pkey" PRIMARY KEY ("id")
+-);
+-
+--- CreateTable
+-CREATE TABLE "_CategoryToUser" (
+-    "A" TEXT NOT NULL,
+-    "B" TEXT NOT NULL,
+-
+-    CONSTRAINT "_CategoryToUser_AB_pkey" PRIMARY KEY ("A","B")
+-);
+-
+--- CreateIndex
+-CREATE UNIQUE INDEX "User_username_key" ON "User"("username");
+-
+--- CreateIndex
+-CREATE INDEX "_CategoryToUser_B_index" ON "_CategoryToUser"("B");
+-
+--- AddForeignKey
+-ALTER TABLE "Transaction" ADD CONSTRAINT "Transaction_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+-
+--- AddForeignKey
+-ALTER TABLE "Transaction" ADD CONSTRAINT "Transaction_categoryId_fkey" FOREIGN KEY ("categoryId") REFERENCES "Category"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+-
+--- AddForeignKey
+-ALTER TABLE "_CategoryToUser" ADD CONSTRAINT "_CategoryToUser_A_fkey" FOREIGN KEY ("A") REFERENCES "Category"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+-
+--- AddForeignKey
+-ALTER TABLE "_CategoryToUser" ADD CONSTRAINT "_CategoryToUser_B_fkey" FOREIGN KEY ("B") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+diff --git a/backend/prisma/migrations/20260210052720_init/migration.sql b/backend/prisma/migrations/20260210052720_init/migration.sql
+deleted file mode 100644
+index 953cca0..0000000
+--- a/backend/prisma/migrations/20260210052720_init/migration.sql
++++ /dev/null
+@@ -1,2 +0,0 @@
+--- AlterTable
+-ALTER TABLE "Transaction" ALTER COLUMN "date" DROP NOT NULL;
+diff --git a/backend/prisma/migrations/migration_lock.toml b/backend/prisma/migrations/migration_lock.toml
+deleted file mode 100644
+index 044d57c..0000000
+--- a/backend/prisma/migrations/migration_lock.toml
++++ /dev/null
+@@ -1,3 +0,0 @@
+-# Please do not edit this file manually
+-# It should be added in your version-control system (e.g., Git)
+-provider = "postgresql"
+diff --git a/backend/src/config/env.ts b/backend/src/config/env.ts
+index 566863f..bda791b 100644
+--- a/backend/src/config/env.ts
++++ b/backend/src/config/env.ts
+@@ -1,2 +1,3 @@
+ export const DB_URL = process.env.DATABASE_URL || "test";
+ export const JWT_SECRET = process.env.JWT_SECRET || "something";
++export const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:5173";
+\ No newline at end of file
+diff --git a/backend/src/index.ts b/backend/src/index.ts
+index 8659ecd..679106a 100644
+--- a/backend/src/index.ts
++++ b/backend/src/index.ts
+@@ -1,8 +1,14 @@
+ import express, { Request, Response, NextFunction } from "express";
+ import { AppError } from "./utils/error";
+ import router from "./routes";
++
++import cors from "cors";
++import { FRONTEND_URL } from "./config/env";
++
+ const app = express();
+ 
++app.use(cors({ origin: FRONTEND_URL }));
++
+ app.use(express.json());
+ 
+ app.use("/", router);
+diff --git a/backend/tsconfig.tsbuildinfo b/backend/tsconfig.tsbuildinfo
+new file mode 100644
+index 0000000..9fe1b7b
+--- /dev/null
++++ b/backend/tsconfig.tsbuildinfo
+@@ -0,0 +1 @@
++{"root":["./src/index.ts","./src/config/env.ts","./src/config/prisma.config.ts","./src/generated/prisma/browser.ts","./src/generated/prisma/client.ts","./src/generated/prisma/commoninputtypes.ts","./src/generated/prisma/enums.ts","./src/generated/prisma/models.ts","./src/generated/prisma/internal/class.ts","./src/generated/prisma/internal/prismanamespace.ts","./src/generated/prisma/internal/prismanamespacebrowser.ts","./src/generated/prisma/models/category.ts","./src/generated/prisma/models/transaction.ts","./src/generated/prisma/models/user.ts","./src/middleware/auth.middleware.ts","./src/repo/category.repo.ts","./src/repo/transaction.repo.ts","./src/repo/user.repo.ts","./src/routes/auth.routes.ts","./src/routes/category.routes.ts","./src/routes/dashboard.routes.ts","./src/routes/index.ts","./src/routes/transaction.routes.ts","./src/types/global.d.ts","./src/types/jwt.ts","./src/utils/error.ts","./src/utils/jwt.ts","./src/utils/success.ts","./src/validations/auth.validation.ts","./src/validations/category.validation.ts","./src/validations/transaction.validation.ts"],"version":"5.9.3"}
+\ No newline at end of file
+diff --git a/frontend/src/lib/api.ts b/frontend/src/lib/api.ts
+index b0c51f5..5f677f6 100644
+--- a/frontend/src/lib/api.ts
++++ b/frontend/src/lib/api.ts
+@@ -1,4 +1,4 @@
+-const API_BASE_URL = "http://localhost:3000";
++const API_BASE_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
+ 
+ interface ApiResponse<T = any> {
+   success: boolean;
+diff --git a/frontend/src/pages/Incomes.tsx b/frontend/src/pages/Incomes.tsx
+index 67955a5..72ae4d9 100644
+--- a/frontend/src/pages/Incomes.tsx
++++ b/frontend/src/pages/Incomes.tsx
+@@ -17,7 +17,6 @@ import { useCategoryStore } from "@/store/CategoryStore";
+ import { Transactions } from "@/components/Transactions";
+ import {
+   TrendingDown,
+-  Minus,
+   AlertCircle,
+   DollarSign,
+   Plus,

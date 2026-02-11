@@ -17,7 +17,6 @@ import { useCategoryStore } from "@/store/CategoryStore";
 import { Transactions } from "@/components/Transactions";
 import {
   TrendingDown,
-  Minus,
   AlertCircle,
   DollarSign,
   Plus,
