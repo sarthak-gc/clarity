@@ -1,7 +1,13 @@
 import express, { Request, Response, NextFunction } from "express";
 import { AppError } from "./utils/error";
 import router from "./routes";
+
+import cors from "cors";
+import { FRONTEND_URL } from "./config/env";
+
 const app = express();
+
+app.use(cors({ origin: FRONTEND_URL }));
 
 app.use(express.json());
 
