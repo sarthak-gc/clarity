@@ -3,7 +3,7 @@ import { AppError } from "./utils/error";
 import router from "./routes";
 
 import cors from "cors";
-import { FRONTEND_URL } from "./config/env";
+import { FRONTEND_URL, PORT } from "./config/env";
 
 const app = express();
 
@@ -23,4 +23,4 @@ app.use((err: AppError, _: Request, res: Response, __: NextFunction) => {
   return;
 });
 
-app.listen(3000);
+app.listen(PORT);

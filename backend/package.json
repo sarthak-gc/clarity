@@ -4,8 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "pnpm i && pnpm prisma generate && npx tsc -b",
-    "start": "node dist/index.js"
+    "build": "pnpm i && pnpm prisma generate && && pnpm run db:migrate && npx tsc -b",
+    "db:migrate": "pnpm prisma migrate dev --name 'init'",
+    "start": "node --env-file=.env dist/index.js"
   },
   "keywords": [],
   "author": "",
@@ -20,7 +21,6 @@
     "@types/jsonwebtoken": "^9.0.10",
     "bcrypt": "^6.0.0",
     "cors": "^2.8.6",
-    "dotenv": "^17.2.4",
     "express": "^5.2.1",
     "jsonwebtoken": "^9.0.3",
     "pg": "^8.18.0",

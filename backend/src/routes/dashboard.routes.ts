@@ -107,12 +107,13 @@ dashboardRoutes.get("/activity-log", async (req: Request, res: Response) => {
   const page = Math.max(Number(req.query.p || 0), 0);
   const userId = req.userId;
   const endDate = Date.now();
-  const startDate = new Date(endDate - 90 * 24 * 60 * 60 * 1000);
+  const startDate = new Date(endDate - 1000 * 24 * 60 * 60 * 1000);
   const totalTransactions = await TransactionRepo.filterTransactionByDate(
     userId,
     startDate,
     new Date(endDate),
     page,
+    1000
   );
 
   const dailyMap: Map<string, LineGraphPoint> = new Map();
