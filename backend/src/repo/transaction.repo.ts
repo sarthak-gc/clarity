@@ -46,7 +46,11 @@ export const TransactionRepo = {
   },
   getAllTransactions: (userId: string, page: number, take: number = 10) => {
     return prisma.transaction.findMany({
-      where: { userId },
+      where: { userId,
+        date: {
+          gte: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000),
+        },
+       },
       include: {
         category: {
           select: {
@@ -58,7 +62,7 @@ export const TransactionRepo = {
       take,
       skip: page * take,
       orderBy: {
-        createdAt: "desc",
+      createdAt: "desc",
       },
     });
   },
@@ -122,6 +126,17 @@ export const TransactionRepo = {
       },
       take,
       skip: page * take,
+      orderBy: {
+        date: "desc",
+      },
+      include:{
+        category: {
+          select: {
+            name: true,
+            id: true,
+          },
+        },
+      }
     });
   },
   filterTransactionByCategory: (
@@ -137,6 +152,14 @@ export const TransactionRepo = {
       },
       take,
       skip: page * take,
+      include: {
+        category: {
+          select: {
+            name: true,
+            id: true,
+          },
+        },
+      },
     });
   },
 };

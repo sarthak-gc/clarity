@@ -15,6 +15,7 @@ export const createTransactionSchema = z.object({
       error: "You can only add transaction for past dates",
     }),
   categoryId: z.string().optional(),
+  categoryName: z.string().optional(),
 });
 
 export const updateTransactionSchema = z.object({
@@ -33,6 +34,7 @@ export const updateTransactionSchema = z.object({
       error: "You can only add transaction for past dates",
     }),
   categoryId: z.string().optional(),
+  categoryName: z.string().optional(),
 });
 
 export const getTransactionByDateRangeSchema = z

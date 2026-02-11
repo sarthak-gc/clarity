@@ -52,7 +52,7 @@ categoryRoutes.patch("/:categoryId", async (req, res) => {
   if (!name) {
     throw new BadRequestError("Name is required");
   }
-  await CategoryRepo.editCategory(name);
+  await CategoryRepo.editCategory(categoryId, name);
   success(res, "Category updated");
 });
 

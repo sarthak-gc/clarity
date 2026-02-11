@@ -7,8 +7,11 @@ export const CategoryRepo = {
       },
     });
   },
-  editCategory: (name: string) => {
-    return prisma.category.create({
+  editCategory: (id: string, name: string) => {
+    return prisma.category.update({
+      where: {
+        id
+      },
       data: {
         name,
       },

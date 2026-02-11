@@ -26,14 +26,22 @@ transactionRoutes.post("/", async (req, res) => {
   if (error) {
     throw new BadRequestError(JSON.parse(error.message)[0].message);
   }
-  const { amt, type, date, categoryId, description } = data;
+  const { amt, type, date, categoryId, description, categoryName} = data;
+
+  let newCategoryId:string="";
+
+  if(categoryName && categoryId == "added-new-category"){
+    const category = await CategoryRepo.addCategory(categoryName, req.userId);
+    newCategoryId = category.id;
+  }
+
   const userId = req.userId;
   const transaction = await TransactionRepo.createTransaction(
     userId,
     amt,
     type,
     date,
-    categoryId,
+    categoryId == "added-new-category" ? newCategoryId : categoryId,
     description,
   );
   if (!transaction) {
@@ -85,7 +93,7 @@ transactionRoutes.patch("/:transactionId", async (req, res) => {
   }
   let updatedData: any = {};
 
-  const { amt, type, date, categoryId, description } = data;
+  const { amt, type, date, categoryId, description ,categoryName} = data;
   if (amt) {
     updatedData.amt = amt;
   }
@@ -105,6 +113,11 @@ transactionRoutes.patch("/:transactionId", async (req, res) => {
     if (!category) {
       throw new NotFoundError("Category not found");
     }
+  }
+  if(categoryName && !categoryId){
+    updatedData.categoryName = categoryName;
+    const category = await CategoryRepo.addCategory(categoryName, userId);
+    updatedData.categoryId = category.id;
   }
 
   await TransactionRepo.editTransaction(transactionId, userId, updatedData);
