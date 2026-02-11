@@ -4,8 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "pnpm i && pnpm prisma generate && pnpm run db:migrate && npx tsc -b",
-    "db:migrate": "pnpm prisma migrate dev --name 'init'",
+    "build": "pnpm i && pnpm prisma generate && npx tsc -b",
     "start": "node --env-file=.env dist/index.js"
   },
   "keywords": [],
